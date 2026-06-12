@@ -4,6 +4,11 @@ const clubs = require('./clubs');
 const RSS_FEEDS = [
   {
     name: 'iSport.cz',
+    url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/',
+    color: '#E30613',
+  },
+  {
+    name: 'iSport.cz',
     url: 'https://isport.blesk.cz/rss/fotbal/',
     color: '#E30613',
   },
@@ -16,21 +21,6 @@ const RSS_FEEDS = [
     name: 'ČT Sport',
     url: 'https://sport.ceskatelevize.cz/rss',
     color: '#004B87',
-  },
-  {
-    name: 'Deník.cz',
-    url: 'https://www.denik.cz/rss/sport.rss',
-    color: '#D40000',
-  },
-  {
-    name: 'Fotbalový svět',
-    url: 'https://www.fotbalsvět.cz/feed/',
-    color: '#1A7F3C',
-  },
-  {
-    name: 'iSport Extra',
-    url: 'https://isport.blesk.cz/rss/chance-liga/',
-    color: '#FF6600',
   },
 ];
 
@@ -87,19 +77,19 @@ async function fetchFeed(feed) {
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
     }));
-    console.log(`✅ ${feed.name}: ${items.length} článků`);
-    return { ok: true, name: feed.name, count: items.length, items };
+    console.log(`✅ ${feed.name} (${feed.url}): ${items.length} článků`);
+    return { ok: true, name: feed.name, url: feed.url, count: items.length, items };
   } catch (err) {
-    console.warn(`❌ ${feed.name}: ${err.message}`);
-    return { ok: false, name: feed.name, error: err.message, items: [] };
+    console.warn(`❌ ${feed.name} (${feed.url}): ${err.message}`);
+    return { ok: false, name: feed.name, url: feed.url, error: err.message, items: [] };
   }
 }
 
-// Debug endpoint
 async function fetchFeedDirect() {
   const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
   return results.map(r => ({
     name: r.name,
+    url: r.url,
     ok: r.ok,
     count: r.count || 0,
     error: r.error || null,
@@ -108,9 +98,19 @@ async function fetchFeedDirect() {
 
 async function fetchAllArticles() {
   const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
-  const all = results.flatMap(r => r.items);
+  // Deduplikace podle URL článku
+  const seen = new Set();
+  const all = [];
+  for (const r of results) {
+    for (const item of r.items) {
+      if (!seen.has(item.url)) {
+        seen.add(item.url);
+        all.push(item);
+      }
+    }
+  }
   all.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  console.log(`📰 Celkem: ${all.length} článků`);
+  console.log(`📰 Celkem unikátních článků: ${all.length}`);
   return all;
 }
 
