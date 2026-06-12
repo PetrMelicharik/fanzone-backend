@@ -2,12 +2,36 @@ const Parser = require('rss-parser');
 const clubs = require('./clubs');
 
 const RSS_FEEDS = [
-  { name: 'iSport.cz',   url: 'https://isport.blesk.cz/rss/fotbal/',        color: '#E30613' },
-  { name: 'Sport.cz',    url: 'https://www.sport.cz/rss/fotbal/',            color: '#003DA5' },
-  { name: 'Fotbal.cz',   url: 'https://www.fotbal.cz/rss/clanky.xml',        color: '#009933' },
-  { name: 'ČT Sport',    url: 'https://sport.ceskatelevize.cz/rss',          color: '#004B87' },
-  { name: 'Deník.cz',    url: 'https://www.denik.cz/rss/fotbal.rss',         color: '#D40000' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/feed/',       color: '#1A7F3C' },
+  {
+    name: 'iSport.cz',
+    url: 'https://isport.blesk.cz/rss/fotbal/',
+    color: '#E30613',
+  },
+  {
+    name: 'Sport.cz',
+    url: 'https://www.sport.cz/rss/fotbal/',
+    color: '#003DA5',
+  },
+  {
+    name: 'ČT Sport',
+    url: 'https://sport.ceskatelevize.cz/rss',
+    color: '#004B87',
+  },
+  {
+    name: 'Deník.cz',
+    url: 'https://www.denik.cz/rss/sport.rss',
+    color: '#D40000',
+  },
+  {
+    name: 'Fotbalový svět',
+    url: 'https://www.fotbalsvět.cz/feed/',
+    color: '#1A7F3C',
+  },
+  {
+    name: 'iSport Extra',
+    url: 'https://isport.blesk.cz/rss/chance-liga/',
+    color: '#FF6600',
+  },
 ];
 
 const USER_AGENTS = [
@@ -28,7 +52,7 @@ function makeParser() {
       'Accept': 'application/rss+xml, application/xml, text/xml, */*',
       'Accept-Language': 'cs-CZ,cs;q=0.9',
       'Cache-Control': 'no-cache',
-      'Referer': 'https://www.google.com/',
+      'Referer': 'https://www.google.cz/',
     },
   });
 }
@@ -71,7 +95,7 @@ async function fetchFeed(feed) {
   }
 }
 
-// Debug endpoint — vrátí stav každého feedu zvlášť
+// Debug endpoint
 async function fetchFeedDirect() {
   const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
   return results.map(r => ({
