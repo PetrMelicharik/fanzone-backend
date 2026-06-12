@@ -9,33 +9,36 @@ const cache = new NodeCache({ stdTTL: 600 });
 app.use(cors());
 app.use(express.json());
 
-// GET /api/clubs
 app.get('/api/clubs', (req, res) => {
   const clubs = require('./clubs');
   res.json(clubs);
 });
 
-// GET /api/debug - testuje každý feed zvlášť, bez cache
 app.get('/api/debug', async (req, res) => {
   const results = await fetchFeedDirect();
   res.json(results);
 });
 
-// GET /api/cache/clear - vymaže cache
 app.get('/api/cache/clear', (req, res) => {
   cache.flushAll();
   res.json({ ok: true, message: 'Cache vymazána' });
 });
 
-// GET /api/articles/:clubSlug
+// Ukáže titulky článků — pro ladění filtrování
+app.get('/api/sample', async (req, res) => {
+  const articles = await fetchAllArticles();
+  res.json(articles.slice(0, 30).map(a => ({
+    source: a.source,
+    title: a.title,
+  })));
+});
+
 app.get('/api/articles/:clubSlug', async (req, res) => {
   const { clubSlug } = req.params;
   const cacheKey = `articles_${clubSlug}`;
 
   const cached = cache.get(cacheKey);
-  if (cached) {
-    return res.json({ articles: cached, fromCache: true });
-  }
+  if (cached) return res.json({ articles: cached, fromCache: true });
 
   try {
     const articles = await fetchArticlesForClub(clubSlug);
@@ -47,14 +50,11 @@ app.get('/api/articles/:clubSlug', async (req, res) => {
   }
 });
 
-// GET /api/articles
 app.get('/api/articles', async (req, res) => {
   const cacheKey = 'articles_all';
 
   const cached = cache.get(cacheKey);
-  if (cached) {
-    return res.json({ articles: cached, fromCache: true });
-  }
+  if (cached) return res.json({ articles: cached, fromCache: true });
 
   try {
     const articles = await fetchAllArticles();
