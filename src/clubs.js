@@ -21,7 +21,7 @@ const clubs = [
     city: 'Plzeň',
     abbr: 'PLZ',
     color: '#003087',
-    keywords: ['Plzeň', 'Plzně', 'Plzni', 'Viktoria Plzeň', 'FC Viktoria', 'plzeňský', 'plzeňští', 'Viktorka'],
+    keywords: ['Plzeň', 'Plzně', 'Plzni', 'Plzní', 'Viktoria Plzeň', 'FC Viktoria', 'plzeňský', 'plzeňští', 'Viktorka'],
   },
   {
     slug: 'banik-ostrava',
@@ -37,7 +37,7 @@ const clubs = [
     city: 'Olomouc',
     abbr: 'OLO',
     color: '#003366',
-    keywords: ['Sigma', 'Sigmy', 'Sigmě', 'Sigma Olomouc', 'SK Sigma', 'olomoucký', 'olomoučtí'],
+    keywords: ['Sigma', 'Sigmy', 'Sigmě', 'Sigmou', 'Sigma Olomouc', 'SK Sigma', 'olomoucký', 'olomoučtí'],
   },
   {
     slug: 'bohemians-1905',
@@ -45,7 +45,7 @@ const clubs = [
     city: 'Praha',
     abbr: 'BOH',
     color: '#007A33',
-    keywords: ['Bohemians', 'Bohemians 1905', 'Bohemce', 'Bohemka', 'klokani', 'klokanů'],
+    keywords: ['Bohemians', 'Bohemians 1905', 'Bohemce', 'Bohemka', 'Bohemky', 'Bohemkou', 'klokani', 'klokanů'],
   },
   {
     slug: 'slovan-liberec',
@@ -53,7 +53,7 @@ const clubs = [
     city: 'Liberec',
     abbr: 'LIB',
     color: '#003DA5',
-    keywords: ['Liberec', 'Liberce', 'Liberci', 'Slovan Liberec', 'FC Slovan', 'liberecký', 'liberečtí'],
+    keywords: ['Liberec', 'Liberce', 'Liberci', 'Libercem', 'Slovan Liberec', 'FC Slovan', 'liberecký', 'liberečtí'],
   },
   {
     slug: 'slovacko',
@@ -61,7 +61,7 @@ const clubs = [
     city: 'Uherské Hradiště',
     abbr: 'SLO',
     color: '#C8500A',
-    keywords: ['Slovácko', 'Slovácka', 'Slovácku', 'FC Slovácko', 'Uherské Hradiště', 'uherskohradišťský'],
+    keywords: ['Slovácko', 'Slovácka', 'Slovácku', 'Slováckem', 'FC Slovácko', 'Uherské Hradiště', 'uherskohradišťský'],
   },
   {
     slug: 'mlada-boleslav',
@@ -69,7 +69,7 @@ const clubs = [
     city: 'Mladá Boleslav',
     abbr: 'MLB',
     color: '#005BAC',
-    keywords: ['Boleslav', 'Boleslavy', 'Boleslavi', 'Mladá Boleslav', 'FK Mladá Boleslav', 'boleslavský', 'boleslavští'],
+    keywords: ['Boleslav', 'Boleslavy', 'Boleslavi', 'Boleslaví', 'Mladá Boleslav', 'FK Mladá Boleslav', 'boleslavský', 'boleslavští'],
   },
   {
     slug: 'jablonec',
@@ -77,7 +77,7 @@ const clubs = [
     city: 'Jablonec n. N.',
     abbr: 'JAB',
     color: '#F7A600',
-    keywords: ['Jablonec', 'Jablonce', 'Jablonci', 'FK Jablonec', 'jablonecký', 'jablonečtí'],
+    keywords: ['Jablonec', 'Jablonce', 'Jablonci', 'Jabloncem', 'FK Jablonec', 'jablonecký', 'jablonečtí'],
   },
   {
     slug: 'teplice',
@@ -85,7 +85,7 @@ const clubs = [
     city: 'Teplice',
     abbr: 'TEP',
     color: '#C8A200',
-    keywords: ['Teplice', 'Teplic', 'Teplicích', 'Teplického', 'FK Teplice', 'teplický', 'tepličtí'],
+    keywords: ['Teplice', 'Teplic', 'Teplicích', 'Teplicema', 'Teplicím', 'Teplického', 'FK Teplice', 'teplický', 'tepličtí'],
   },
   {
     slug: 'karvina',
@@ -101,7 +101,7 @@ const clubs = [
     city: 'Hradec Králové',
     abbr: 'HRA',
     color: '#CC0000',
-    keywords: ['Hradec', 'Hradce', 'Hradci', 'Hradec Králové', 'FC Hradec', 'hradecký', 'hradečtí'],
+    keywords: ['Hradec', 'Hradce', 'Hradci', 'Hradcem', 'Hradec Králové', 'FC Hradec', 'hradecký', 'hradečtí'],
   },
   {
     slug: 'ceske-budejovice',
