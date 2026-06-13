@@ -12,7 +12,6 @@ const RSS_FEEDS = [
 
   // Další funkční zdroje
   { name: 'EuroFotbal.cz',  url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
-  { name: 'ČeskéNoviny.cz', url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
   { name: 'iDnes.cz',       url: 'https://servis.idnes.cz/rss.asp?c=fotbal', color: '#D32F2F' },
   { name: 'Deník.cz',       url: 'https://www.denik.cz/rss/sport.html', color: '#E67E22' },];
 
