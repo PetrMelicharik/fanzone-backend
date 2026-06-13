@@ -14,28 +14,7 @@ const RSS_FEEDS = [
   { name: 'EuroFotbal.cz',  url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
   { name: 'ČeskéNoviny.cz', url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
   { name: 'iDnes.cz',       url: 'https://servis.idnes.cz/rss.asp?c=fotbal', color: '#D32F2F' },
-  { name: 'Deník.cz',       url: 'https://www.denik.cz/rss/fotbal-prvni-liga.rss', color: '#E67E22' },
-
-  // Google News RSS — pro každý klub zvlášť
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Slavia+Praha+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Slavia' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Sparta+Praha+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Sparta' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Viktoria+Plze%C5%88+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Plzeň' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Ban%C3%ADk+Ostrava+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Baník' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Sigma+Olomouc+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Sigma' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Bohemians+1905+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Bohemians' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Slovan+Liberec+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Liberec' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Slova%C4%8Dko+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Slovácko' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Mlad%C3%A1+Boleslav+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Boleslav' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=FK+Jablonec+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Jablonec' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=FK+Teplice+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Teplice' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Karvin%C3%A1+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Karviná' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Hradec+Kr%C3%A1lov%C3%A9+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Hradec' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Dynamo+%C4%8C.+Bud%C4%9Bjovice+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Dynamo' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Zbrojovka+Brno+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Zbrojovka' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Dukla+Praha+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Dukla' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=FK+Pardubice+fotbal&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Pardubice' },
-  { name: 'Google News', url: 'https://news.google.com/rss/search?q=Zl%C3%ADn+fotbal+Trinity&hl=cs&gl=CZ&ceid=CZ:cs', color: '#4285F4', clubOnly: 'Zlín' },
-];
+  { name: 'Deník.cz',       url: 'https://www.denik.cz/rss/fotbal.rss', color: '#E67E22' },];
 
 // Oficiální weby klubů — pouze ty které skutečně vrací RSS
 const CLUB_FEEDS = [
