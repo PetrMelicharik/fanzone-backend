@@ -2,16 +2,30 @@ const Parser = require('rss-parser');
 const clubs = require('./clubs');
 
 const RSS_FEEDS = [
-  // iSport — sekce přímo pro Chance ligu
+  // Obecné české fotbalové zdroje
   { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/', color: '#E30613' },
-  // iSport — obecný fotbal (přestupy, reprezentace s hráči klubů)
   { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal/', color: '#E30613' },
-  // Sport.cz — fotbal
-  { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
-  // ČT Sport — vše (fotbal filtrujeme podle sekcí)
-  { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
-  // iSport — domácí fotbal (druhá liga, pohár atd.)
   { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal-domaci-souteze/', color: '#E30613' },
+  { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
+  { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
+
+  // Oficiální weby klubů
+  { name: 'Slavia Praha',    url: 'https://www.slavia.cz/feed/', color: '#CC0000', clubOnly: true },
+  { name: 'Sparta Praha',    url: 'https://www.sparta.cz/feed/', color: '#AC1A2F', clubOnly: true },
+  { name: 'Viktoria Plzeň',  url: 'https://www.fcviktoria.cz/feed/', color: '#003087', clubOnly: true },
+  { name: 'Baník Ostrava',   url: 'https://www.fcbanik.cz/feed/', color: '#005CA9', clubOnly: true },
+  { name: 'Sigma Olomouc',   url: 'https://www.sigmafotbal.cz/feed/', color: '#003366', clubOnly: true },
+  { name: 'Bohemians 1905',  url: 'https://www.bohemians.cz/feed/', color: '#007A33', clubOnly: true },
+  { name: 'Slovan Liberec',  url: 'https://www.fcslovanliberec.cz/feed/', color: '#003DA5', clubOnly: true },
+  { name: 'FC Slovácko',     url: 'https://www.fcslovacko.cz/feed/', color: '#C8500A', clubOnly: true },
+  { name: 'Mladá Boleslav',  url: 'https://www.fkmladaboleslav.cz/feed/', color: '#005BAC', clubOnly: true },
+  { name: 'FK Jablonec',     url: 'https://www.fkjablonec.cz/feed/', color: '#F7A600', clubOnly: true },
+  { name: 'FK Teplice',      url: 'https://www.fkteplice.cz/feed/', color: '#C8A200', clubOnly: true },
+  { name: 'MFK Karviná',     url: 'https://www.mfkkarvina.cz/feed/', color: '#00529B', clubOnly: true },
+  { name: 'Hradec Králové',  url: 'https://www.fchradec.cz/feed/', color: '#CC0000', clubOnly: true },
+  { name: 'Dynamo Č.B.',     url: 'https://www.dynamocb.cz/feed/', color: '#1A1A1A', clubOnly: true },
+  { name: 'Zbrojovka Brno',  url: 'https://www.zbrojovka.cz/feed/', color: '#003DA5', clubOnly: true },
+  { name: 'Dukla Praha',     url: 'https://www.fkdukla.cz/feed/', color: '#CC9900', clubOnly: true },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
@@ -57,7 +71,12 @@ function stripHtml(html) {
 }
 
 function articleMatchesClub(item, club) {
-  // Hledáme ve všech dostupných textových polích
+  // Pokud článek pochází z oficiálního webu klubu, patří vždy tomuto klubu
+  if (item._clubOnly) {
+    return item._clubOnly === club.name;
+  }
+
+  // Jinak hledáme ve všech dostupných textových polích
   const searchText = normalize([
     item.title || '',
     item.contentSnippet || '',
@@ -87,12 +106,15 @@ async function fetchFeed(feed) {
       source: feed.name,
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
-      // Interní pole pro matching — neposílá se klientovi
       _content: item.content || '',
+      // Pokud je feed oficiální web klubu, označíme článek — bude vždy patřit tomuto klubu
+      _clubOnly: feed.clubOnly ? feed.name : null,
     }));
 
-    // Vyloučí nesportovní sekce
-    items = items.filter(item => !isBlockedUrl(item.url));
+    // Vyloučí nesportovní sekce (jen pro obecné feedy)
+    if (!feed.clubOnly) {
+      items = items.filter(item => !isBlockedUrl(item.url));
+    }
 
     console.log(`✅ ${feed.name}: ${items.length} článků`);
     return { ok: true, name: feed.name, url: feed.url, count: items.length, items };
