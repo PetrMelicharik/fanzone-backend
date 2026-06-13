@@ -1,4 +1,5 @@
 const Parser = require('rss-parser');
+const { fetchClubFeed } = require('./clubFeedParser');
 const clubs = require('./clubs');
 
 const RSS_FEEDS = [
@@ -13,7 +14,22 @@ const RSS_FEEDS = [
   { name: 'EuroFotbal.cz',  url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
   { name: 'ČeskéNoviny.cz', url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
   { name: 'iDnes.cz',       url: 'https://servis.idnes.cz/rss.asp?c=fotbal', color: '#D32F2F' },
-  { name: 'iDnes.cz',       url: 'https://www.idnes.cz/rss/fotbal', color: '#D32F2F' },
+];
+
+// Oficiální weby klubů — používají tolerantní XML parser
+const CLUB_FEEDS = [
+  { name: 'Slavia Praha',   url: 'https://www.slavia.cz/rss.asp',                color: '#CC0000', clubOnly: 'Slavia' },
+  { name: 'Sparta Praha',   url: 'https://www.sparta.cz/cs/rss/',                color: '#AC1A2F', clubOnly: 'Sparta' },
+  { name: 'Baník Ostrava',  url: 'https://www.fcbanik.cz/rss/',                  color: '#005CA9', clubOnly: 'Baník' },
+  { name: 'Sigma Olomouc',  url: 'https://www.sigmafotbal.cz/rss/',              color: '#003366', clubOnly: 'Sigma' },
+  { name: 'Bohemians 1905', url: 'https://www.bohemians.cz/rss/',                color: '#007A33', clubOnly: 'Bohemians' },
+  { name: 'Slovan Liberec', url: 'https://www.fcslovanliberec.cz/rss/',          color: '#003DA5', clubOnly: 'Liberec' },
+  { name: 'FK Teplice',     url: 'https://www.fkteplice.cz/rss/',                color: '#C8A200', clubOnly: 'Teplice' },
+  { name: 'Zbrojovka Brno', url: 'https://www.zbrojovka.cz/rss/',                color: '#003DA5', clubOnly: 'Zbrojovka' },
+  { name: 'Dukla Praha',    url: 'https://www.fkdukla.cz/rss/',                  color: '#CC9900', clubOnly: 'Dukla' },
+  { name: 'FK Jablonec',    url: 'https://www.fkjablonec.cz/rss/',               color: '#F7A600', clubOnly: 'Jablonec' },
+  { name: 'FC Slovácko',    url: 'https://www.fcslovacko.cz/rss/',               color: '#C8500A', clubOnly: 'Slovácko' },
+  { name: 'Mladá Boleslav', url: 'https://www.fkmladaboleslav.cz/rss/',          color: '#005BAC', clubOnly: 'Boleslav' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
@@ -116,8 +132,11 @@ async function fetchFeed(feed) {
 }
 
 async function fetchFeedDirect() {
-  const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
-  return results.map(r => ({
+  const [main, clubs] = await Promise.all([
+    Promise.all(RSS_FEEDS.map(fetchFeed)),
+    Promise.all(CLUB_FEEDS.map(fetchClubFeed)),
+  ]);
+  return [...main, ...clubs].map(r => ({
     name: r.name,
     url: r.url,
     ok: r.ok,
@@ -127,10 +146,14 @@ async function fetchFeedDirect() {
 }
 
 async function fetchAllArticles() {
-  const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
+  const [mainResults, clubResults] = await Promise.all([
+    Promise.all(RSS_FEEDS.map(fetchFeed)),
+    Promise.all(CLUB_FEEDS.map(fetchClubFeed)),
+  ]);
+
   const seen = new Set();
   const all = [];
-  for (const r of results) {
+  for (const r of [...mainResults, ...clubResults]) {
     for (const item of r.items) {
       if (!seen.has(item.url)) {
         seen.add(item.url);
