@@ -39,10 +39,87 @@ function sanitizeXml(xml) {
     .replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[\da-fA-F]+;)/g, '&amp;');
 }
 
+async function fetchClubFeedOnce(feed) {
+  const res = await fetch(feed.url, {
+    timeout: 20000,
+    headers: {
+      'User-Agent': randomUA(),
+      'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+      'Accept-Language': 'cs-CZ,cs;q=0.9',
+      'Referer': 'https://www.google.cz/',
+    },
+  });
+
+  if (!res.ok) throw new Error(`Status code ${res.status}`);
+
+  // Přečti jako buffer a detekuj kódování z XML hlavičky
+  const buffer = await res.buffer();
+  const sniff = buffer.slice(0, 200).toString('ascii');
+  const encMatch = sniff.match(/encoding=["']([^"']+)["']/i);
+  const encoding = encMatch ? encMatch[1].toLowerCase() : 'utf-8';
+  let xml = iconv.decode(buffer, encoding);
+  xml = sanitizeXml(xml);
+
+  const parsed = await xml2js.parseStringPromise(xml, {
+    explicitArray: true,
+    ignoreAttrs: false,
+    strict: false,
+    trim: true,
+  });
+
+  let items = [];
+  const rss = parsed.rss || parsed.RSS;
+  const feed2 = parsed.feed || parsed.FEED;
+  if (rss) {
+    const channel = rss.channel?.[0] || rss.CHANNEL?.[0];
+    items = channel?.item || channel?.ITEM || [];
+  } else if (feed2) {
+    items = feed2.entry || feed2.ENTRY || [];
+  }
+
+  return items.map(item => {
+    const get = (key) => getText(item[key]) || getText(item[key.toUpperCase()]) || getText(item[key.toLowerCase()]) || '';
+    const content = get('content:encoded') || get('CONTENT:ENCODED') || get('description') || '';
+    const link = get('link') || get('LINK') || '';
+    const title = stripHtml(get('title') || get('TITLE'));
+    const pubDate = get('pubDate') || get('PUBDATE') || get('published') || new Date().toISOString();
+    return {
+      id: get('guid') || get('GUID') || link || String(Math.random()),
+      title,
+      perex: stripHtml(get('description') || get('DESCRIPTION') || content).slice(0, 300),
+      url: link,
+      publishedAt: pubDate,
+      source: feed.name,
+      sourceColor: feed.color,
+      image: extractImage(content) || null,
+      _clubOnly: feed.clubOnly || null,
+      _content: content,
+    };
+  });
+}
+
 async function fetchClubFeed(feed) {
+  // Retry logika — zkusí feed 2x při selhání
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const result = await fetchClubFeedOnce(feed);
+      console.log(`✅ ${feed.name} (klub): ${result.length} článků`);
+      return { ok: true, name: feed.name, url: feed.url, count: result.length, items: result };
+    } catch (err) {
+      if (attempt === 2) {
+        console.warn(`❌ ${feed.name} (klub, pokus ${attempt}): ${err.message}`);
+        return { ok: false, name: feed.name, url: feed.url, error: err.message, items: [] };
+      }
+      console.warn(`⚠️ ${feed.name} (pokus ${attempt}): ${err.message} — zkouším znovu...`);
+      await new Promise(r => setTimeout(r, 2000)); // počkej 2s před retry
+    }
+  }
+}
+
+async function fetchClubFeedOLD(feed) {
   try {
     const res = await fetch(feed.url, {
-      timeout: 15000,
+      timeout: 20000,
       headers: {
         'User-Agent': randomUA(),
         'Accept': 'application/rss+xml, application/xml, text/xml, */*',
@@ -53,61 +130,6 @@ async function fetchClubFeed(feed) {
 
     if (!res.ok) throw new Error(`Status code ${res.status}`);
 
-    // Přečti jako buffer a detekuj kódování z XML hlavičky
-    const buffer = await res.buffer();
-    const sniff = buffer.slice(0, 200).toString('ascii');
-    const encMatch = sniff.match(/encoding=["']([^"']+)["']/i);
-    const encoding = encMatch ? encMatch[1].toLowerCase() : 'utf-8';
-    let xml = iconv.decode(buffer, encoding);
 
-    // Sanitizace nevalidního XML
-    xml = sanitizeXml(xml);
-
-    const parsed = await xml2js.parseStringPromise(xml, {
-      explicitArray: true,
-      ignoreAttrs: false,
-      strict: false,       // tolerantní parsování
-      trim: true,
-    });
-
-    // Podpora RSS 2.0 i Atom + case-insensitive (xml2js strict:false vrací velká písmena)
-    let items = [];
-    const rss = parsed.rss || parsed.RSS;
-    const feed2 = parsed.feed || parsed.FEED;
-    if (rss) {
-      const channel = rss.channel?.[0] || rss.CHANNEL?.[0];
-      items = channel?.item || channel?.ITEM || [];
-    } else if (feed2) {
-      items = feed2.entry || feed2.ENTRY || [];
-    }
-
-    const result = items.map(item => {
-      // Podpora pro case-insensitive klíče (strict: false vrací velká písmena)
-      const get = (key) => getText(item[key]) || getText(item[key.toUpperCase()]) || getText(item[key.toLowerCase()]) || '';
-      const content = get('content:encoded') || get('CONTENT:ENCODED') || get('description') || '';
-      const link = get('link') || get('LINK') || '';
-      const title = stripHtml(get('title') || get('TITLE'));
-      const pubDate = get('pubDate') || get('PUBDATE') || get('published') || new Date().toISOString();
-      return {
-        id: get('guid') || get('GUID') || link || String(Math.random()),
-        title,
-        perex: stripHtml(get('description') || get('DESCRIPTION') || content).slice(0, 300),
-        url: link,
-        publishedAt: pubDate,
-        source: feed.name,
-        sourceColor: feed.color,
-        image: extractImage(content) || null,
-        _clubOnly: feed.clubOnly || null,
-        _content: content,
-      };
-    });
-
-    console.log(`✅ ${feed.name} (klub): ${result.length} článků`);
-    return { ok: true, name: feed.name, url: feed.url, count: result.length, items: result };
-  } catch (err) {
-    console.warn(`❌ ${feed.name} (klub): ${err.message}`);
-    return { ok: false, name: feed.name, url: feed.url, error: err.message, items: [] };
-  }
-}
 
 module.exports = { fetchClubFeed };

@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const NodeCache = require('node-cache');
+const PersistentCache = require('./persistentCache');
 const { fetchAllArticles, fetchArticlesForClub, fetchFeedDirect } = require('./rssService');
 
 const app = express();
-const cache = new NodeCache({ stdTTL: 1800 }); // 30 minut
+const cache = new PersistentCache(7200); // 2 hodiny, přežije restart
 
 app.use(cors());
 app.use(express.json());
