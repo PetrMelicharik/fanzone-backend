@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const xml2js = require('xml2js');
+const iconv = require('iconv-lite');
 
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -52,7 +53,12 @@ async function fetchClubFeed(feed) {
 
     if (!res.ok) throw new Error(`Status code ${res.status}`);
 
-    let xml = await res.text();
+    // Přečti jako buffer a detekuj kódování z XML hlavičky
+    const buffer = await res.buffer();
+    const sniff = buffer.slice(0, 200).toString('ascii');
+    const encMatch = sniff.match(/encoding=["']([^"']+)["']/i);
+    const encoding = encMatch ? encMatch[1].toLowerCase() : 'utf-8';
+    let xml = iconv.decode(buffer, encoding);
 
     // Sanitizace nevalidního XML
     xml = sanitizeXml(xml);

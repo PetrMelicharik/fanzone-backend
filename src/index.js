@@ -4,7 +4,7 @@ const NodeCache = require('node-cache');
 const { fetchAllArticles, fetchArticlesForClub, fetchFeedDirect } = require('./rssService');
 
 const app = express();
-const cache = new NodeCache({ stdTTL: 600 });
+const cache = new NodeCache({ stdTTL: 1800 }); // 30 minut
 
 app.use(cors());
 app.use(express.json());
@@ -85,6 +85,31 @@ app.get('/api/articles', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`✅ Server běží na portu ${PORT}`);
+
+  // Předehřátí cache — načteme všechny články hned po startu
+  console.log('🔥 Předehřívám cache...');
+  try {
+    const articles = await fetchAllArticles();
+    cache.set('articles_all', articles);
+
+    // Načti také top kluby
+    const clubs = require('./clubs');
+    const topClubs = ['slavia-praha', 'sparta-praha', 'viktoria-plzen', 'banik-ostrava', 'sigma-olomouc'];
+    for (const slug of topClubs) {
+      const club = clubs.find(c => c.slug === slug);
+      if (club) {
+        const filtered = articles.filter(item => {
+          const text = (item.title + ' ' + (item.perex || '') + ' ' + (item.url || '')).toLowerCase();
+          return club.keywords.some(kw => text.includes(kw.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')));
+        });
+        cache.set(`articles_${slug}`, filtered);
+        console.log(`  ✅ ${club.name}: ${filtered.length} článků`);
+      }
+    }
+    console.log('🔥 Cache předehřátá!');
+  } catch (err) {
+    console.warn('⚠️ Předehřátí cache selhalo:', err.message);
+  }
 });

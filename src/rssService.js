@@ -16,21 +16,9 @@ const RSS_FEEDS = [
   { name: 'iDnes.cz',       url: 'https://servis.idnes.cz/rss.asp?c=fotbal', color: '#D32F2F' },
 ];
 
-// Oficiální weby klubů — používají tolerantní XML parser
+// Oficiální weby klubů — pouze ty které skutečně vrací RSS
 const CLUB_FEEDS = [
-  // Slavia vrací HTML místo RSS — přeskočíme, zachytíme přes obecné feedy
-  // { name: 'Slavia Praha',   url: 'https://www.slavia.cz/rss.asp', color: '#CC0000', clubOnly: 'Slavia' },
-  { name: 'Sparta Praha',   url: 'https://www.sparta.cz/cs/rss/',                color: '#AC1A2F', clubOnly: 'Sparta' },
-  { name: 'Baník Ostrava',  url: 'https://www.fcb.cz/rss.asp',                   color: '#005CA9', clubOnly: 'Baník' },
-  { name: 'Sigma Olomouc',  url: 'https://www.sigmafotbal.cz/rss/',              color: '#003366', clubOnly: 'Sigma' },
-  { name: 'Bohemians 1905', url: 'https://www.bohemians.cz/rss/',                color: '#007A33', clubOnly: 'Bohemians' },
-  { name: 'Slovan Liberec', url: 'https://www.fcslovanliberec.cz/rss/',          color: '#003DA5', clubOnly: 'Liberec' },
-  { name: 'FK Teplice',     url: 'https://www.fkteplice.cz/rss/',                color: '#C8A200', clubOnly: 'Teplice' },
-  { name: 'Zbrojovka Brno', url: 'https://www.zbrojovka.cz/rss/',                color: '#003DA5', clubOnly: 'Zbrojovka' },
-  { name: 'Dukla Praha',    url: 'https://www.fkdukla.cz/rss/',                  color: '#CC9900', clubOnly: 'Dukla' },
-  { name: 'FK Jablonec',    url: 'https://www.fkjablonec.cz/rss/',               color: '#F7A600', clubOnly: 'Jablonec' },
-  { name: 'FC Slovácko',    url: 'https://www.fcslovacko.cz/rss/',               color: '#C8500A', clubOnly: 'Slovácko' },
-  { name: 'Mladá Boleslav', url: 'https://www.fkmladaboleslav.cz/rss/',          color: '#005BAC', clubOnly: 'Boleslav' },
+  { name: 'Baník Ostrava', url: 'https://www.fcb.cz/rss.asp', color: '#005CA9', clubOnly: 'Baník' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
