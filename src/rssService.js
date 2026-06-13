@@ -9,14 +9,28 @@ const RSS_FEEDS = [
   { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
   { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
 
-  // Další zdroje — eFotbal.cz a fotbalportal.cz
-  { name: 'eFotbal.cz',      url: 'https://www.efotbal.cz/feed/', color: '#1A5276' },
-  { name: 'eFotbal.cz',      url: 'https://www.efotbal.cz/rss/', color: '#1A5276' },
-  { name: 'FotbalPortal.cz', url: 'https://www.fotbalportal.cz/rss/', color: '#2E7D32' },
-  { name: 'FotbalPortal.cz', url: 'https://www.fotbalportal.cz/feed/', color: '#2E7D32' },
-  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/slavia-praha/', color: '#8E44AD' },
-  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/sparta-praha/', color: '#8E44AD' },
-  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/cesko/', color: '#8E44AD' },
+  // Další zdroje
+  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
+  { name: 'ČeskéNoviny.cz',  url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
+  { name: 'aktualne.cz',     url: 'https://sport.aktualne.cz/fotbal/ceska-liga/rss.xml', color: '#E67E22' },
+
+  // inFotbal.cz — RSS pro každý klub zvlášť (WordPress /feed/)
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/slavia/feed/',    color: '#1A7F3C', clubOnly: 'Slavia Praha' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/sparta/feed/',    color: '#1A7F3C', clubOnly: 'Sparta Praha' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/plzen/feed/',     color: '#1A7F3C', clubOnly: 'Viktoria Plzeň' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/banik/feed/',     color: '#1A7F3C', clubOnly: 'Baník Ostrava' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/sigma/feed/',     color: '#1A7F3C', clubOnly: 'Sigma Olomouc' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/bohemians/feed/', color: '#1A7F3C', clubOnly: 'Bohemians 1905' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/liberec/feed/',   color: '#1A7F3C', clubOnly: 'Slovan Liberec' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/slovacko/feed/',  color: '#1A7F3C', clubOnly: 'FC Slovácko' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/boleslav/feed/',  color: '#1A7F3C', clubOnly: 'Mladá Boleslav' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/jablonec/feed/',  color: '#1A7F3C', clubOnly: 'FK Jablonec' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/teplice/feed/',   color: '#1A7F3C', clubOnly: 'FK Teplice' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/karvina/feed/',   color: '#1A7F3C', clubOnly: 'MFK Karviná' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/hradec/feed/',    color: '#1A7F3C', clubOnly: 'Hradec Králové' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/dynamocb/feed/',  color: '#1A7F3C', clubOnly: 'Dynamo Č.B.' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/zbrojovka/feed/', color: '#1A7F3C', clubOnly: 'Zbrojovka Brno' },
+  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/dukla/feed/',     color: '#1A7F3C', clubOnly: 'Dukla Praha' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
@@ -62,9 +76,12 @@ function stripHtml(html) {
 }
 
 function articleMatchesClub(item, club) {
-  // Pokud článek pochází z oficiálního webu klubu, patří vždy tomuto klubu
+  // Pokud článek pochází z feedu pro konkrétní klub, zkontroluj jestli patří tomuto klubu
   if (item._clubOnly) {
-    return item._clubOnly === club.name;
+    // Porovnej s prvním keyword klubu (krátký název) nebo celým názvem
+    return club.keywords.some(kw => normalize(item._clubOnly).includes(normalize(kw)))
+        || normalize(club.name).includes(normalize(item._clubOnly))
+        || normalize(item._clubOnly).includes(normalize(club.keywords[0]));
   }
 
   // Jinak hledáme ve všech dostupných textových polích
@@ -98,8 +115,8 @@ async function fetchFeed(feed) {
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
       _content: item.content || '',
-      // Pokud je feed oficiální web klubu, označíme článek — bude vždy patřit tomuto klubu
-      _clubOnly: feed.clubOnly ? feed.name : null,
+      // Pokud je feed pro konkrétní klub, označíme článek — bude vždy patřit tomuto klubu
+      _clubOnly: feed.clubOnly || null,
     }));
 
     // Vyloučí nesportovní sekce (jen pro obecné feedy)
