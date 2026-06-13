@@ -120,6 +120,22 @@ const clubs = [
     keywords: ['Zbrojovka', 'Zbrojovky', 'Zbrojovce', 'Zbrojovkou', 'Zbrojovka Brno', 'FC Zbrojovka', 'brněnský fotbal'],
   },
   {
+    slug: 'pardubice',
+    name: 'FK Pardubice',
+    city: 'Pardubice',
+    abbr: 'PAR',
+    color: '#002F6C',
+    keywords: ['Pardubice', 'Pardubic', 'Pardubicích', 'Pardubicemi', 'FK Pardubice', 'pardubický'],
+  },
+  {
+    slug: 'zlin',
+    name: 'FC Trinity Zlín',
+    city: 'Zlín',
+    abbr: 'ZLN',
+    color: '#FFD700',
+    keywords: ['Zlín', 'Zlína', 'Zlínu', 'Zlínem', 'FC Zlín', 'Trinity Zlín', 'zlínský', 'Fastav'],
+  },
+  {
     slug: 'dukla-praha',
     name: 'FK Dukla Praha',
     city: 'Praha',
