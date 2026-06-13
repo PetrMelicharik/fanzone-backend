@@ -52,8 +52,12 @@ function normalize(text) {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
+// Hledáme POUZE v titulku — RSS feedy neposílají plný obsah
 function articleMatchesClub(item, club) {
-  const searchText = normalize(`${item.title || ''} ${item.contentSnippet || ''} ${item.content || ''}`);
+  const titleNorm = normalize(item.title || '');
+  // Také prohledej URL článku — ta často obsahuje název klubu
+  const urlNorm = normalize(item.url || '');
+  const searchText = titleNorm + ' ' + urlNorm;
   return club.keywords.some(kw => searchText.includes(normalize(kw)));
 }
 
@@ -77,10 +81,10 @@ async function fetchFeed(feed) {
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
     }));
-    console.log(`✅ ${feed.name} (${feed.url}): ${items.length} článků`);
+    console.log(`✅ ${feed.name} (${feed.url.split('/').slice(-2).join('/')}): ${items.length} článků`);
     return { ok: true, name: feed.name, url: feed.url, count: items.length, items };
   } catch (err) {
-    console.warn(`❌ ${feed.name} (${feed.url}): ${err.message}`);
+    console.warn(`❌ ${feed.name}: ${err.message}`);
     return { ok: false, name: feed.name, url: feed.url, error: err.message, items: [] };
   }
 }
@@ -98,7 +102,6 @@ async function fetchFeedDirect() {
 
 async function fetchAllArticles() {
   const results = await Promise.all(RSS_FEEDS.map(fetchFeed));
-  // Deduplikace podle URL článku
   const seen = new Set();
   const all = [];
   for (const r of results) {
