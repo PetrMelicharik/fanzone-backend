@@ -30,12 +30,9 @@ function getText(val) {
   return String(val);
 }
 
-// Opraví nevalidní XML — odstraní atributy bez hodnot
 function sanitizeXml(xml) {
   return xml
-    // Odstraní atributy bez hodnot: class= nebo src= na konci tagu
     .replace(/\s+[\w:-]+=(?=[\s>])/g, ' ')
-    // Odstraní nevalidní znaky
     .replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[\da-fA-F]+;)/g, '&amp;');
 }
 
@@ -52,7 +49,6 @@ async function fetchClubFeedOnce(feed) {
 
   if (!res.ok) throw new Error(`Status code ${res.status}`);
 
-  // Přečti jako buffer a detekuj kódování z XML hlavičky
   const buffer = await res.buffer();
   const sniff = buffer.slice(0, 200).toString('ascii');
   const encMatch = sniff.match(/encoding=["']([^"']+)["']/i);
@@ -99,7 +95,6 @@ async function fetchClubFeedOnce(feed) {
 }
 
 async function fetchClubFeed(feed) {
-  // Retry logika — zkusí feed 2x při selhání
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const result = await fetchClubFeedOnce(feed);
@@ -107,29 +102,13 @@ async function fetchClubFeed(feed) {
       return { ok: true, name: feed.name, url: feed.url, count: result.length, items: result };
     } catch (err) {
       if (attempt === 2) {
-        console.warn(`❌ ${feed.name} (klub, pokus ${attempt}): ${err.message}`);
+        console.warn(`❌ ${feed.name} (pokus ${attempt}): ${err.message}`);
         return { ok: false, name: feed.name, url: feed.url, error: err.message, items: [] };
       }
       console.warn(`⚠️ ${feed.name} (pokus ${attempt}): ${err.message} — zkouším znovu...`);
-      await new Promise(r => setTimeout(r, 2000)); // počkej 2s před retry
+      await new Promise(r => setTimeout(r, 2000));
     }
   }
 }
-
-async function fetchClubFeedOLD(feed) {
-  try {
-    const res = await fetch(feed.url, {
-      timeout: 20000,
-      headers: {
-        'User-Agent': randomUA(),
-        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
-        'Accept-Language': 'cs-CZ,cs;q=0.9',
-        'Referer': 'https://www.google.cz/',
-      },
-    });
-
-    if (!res.ok) throw new Error(`Status code ${res.status}`);
-
-
 
 module.exports = { fetchClubFeed };
