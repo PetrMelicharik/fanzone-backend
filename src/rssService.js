@@ -9,23 +9,14 @@ const RSS_FEEDS = [
   { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
   { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
 
-  // Oficiální weby klubů
-  { name: 'Slavia Praha',    url: 'https://www.slavia.cz/feed/', color: '#CC0000', clubOnly: true },
-  { name: 'Sparta Praha',    url: 'https://www.sparta.cz/feed/', color: '#AC1A2F', clubOnly: true },
-  { name: 'Viktoria Plzeň',  url: 'https://www.fcviktoria.cz/feed/', color: '#003087', clubOnly: true },
-  { name: 'Baník Ostrava',   url: 'https://www.fcbanik.cz/feed/', color: '#005CA9', clubOnly: true },
-  { name: 'Sigma Olomouc',   url: 'https://www.sigmafotbal.cz/feed/', color: '#003366', clubOnly: true },
-  { name: 'Bohemians 1905',  url: 'https://www.bohemians.cz/feed/', color: '#007A33', clubOnly: true },
-  { name: 'Slovan Liberec',  url: 'https://www.fcslovanliberec.cz/feed/', color: '#003DA5', clubOnly: true },
-  { name: 'FC Slovácko',     url: 'https://www.fcslovacko.cz/feed/', color: '#C8500A', clubOnly: true },
-  { name: 'Mladá Boleslav',  url: 'https://www.fkmladaboleslav.cz/feed/', color: '#005BAC', clubOnly: true },
-  { name: 'FK Jablonec',     url: 'https://www.fkjablonec.cz/feed/', color: '#F7A600', clubOnly: true },
-  { name: 'FK Teplice',      url: 'https://www.fkteplice.cz/feed/', color: '#C8A200', clubOnly: true },
-  { name: 'MFK Karviná',     url: 'https://www.mfkkarvina.cz/feed/', color: '#00529B', clubOnly: true },
-  { name: 'Hradec Králové',  url: 'https://www.fchradec.cz/feed/', color: '#CC0000', clubOnly: true },
-  { name: 'Dynamo Č.B.',     url: 'https://www.dynamocb.cz/feed/', color: '#1A1A1A', clubOnly: true },
-  { name: 'Zbrojovka Brno',  url: 'https://www.zbrojovka.cz/feed/', color: '#003DA5', clubOnly: true },
-  { name: 'Dukla Praha',     url: 'https://www.fkdukla.cz/feed/', color: '#CC9900', clubOnly: true },
+  // Další zdroje — eFotbal.cz a fotbalportal.cz
+  { name: 'eFotbal.cz',      url: 'https://www.efotbal.cz/feed/', color: '#1A5276' },
+  { name: 'eFotbal.cz',      url: 'https://www.efotbal.cz/rss/', color: '#1A5276' },
+  { name: 'FotbalPortal.cz', url: 'https://www.fotbalportal.cz/rss/', color: '#2E7D32' },
+  { name: 'FotbalPortal.cz', url: 'https://www.fotbalportal.cz/feed/', color: '#2E7D32' },
+  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/slavia-praha/', color: '#8E44AD' },
+  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/sparta-praha/', color: '#8E44AD' },
+  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/rss/cesko/', color: '#8E44AD' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
