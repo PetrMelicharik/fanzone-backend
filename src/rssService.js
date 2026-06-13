@@ -2,26 +2,10 @@ const Parser = require('rss-parser');
 const clubs = require('./clubs');
 
 const RSS_FEEDS = [
-  {
-    name: 'iSport.cz',
-    url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/',
-    color: '#E30613',
-  },
-  {
-    name: 'iSport.cz',
-    url: 'https://isport.blesk.cz/rss/fotbal/',
-    color: '#E30613',
-  },
-  {
-    name: 'Sport.cz',
-    url: 'https://www.sport.cz/rss/fotbal/',
-    color: '#003DA5',
-  },
-  {
-    name: 'ČT Sport',
-    url: 'https://sport.ceskatelevize.cz/rss',
-    color: '#004B87',
-  },
+  { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/', color: '#E30613' },
+  { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal/', color: '#E30613' },
+  { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
+  { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
@@ -47,15 +31,6 @@ function makeParser() {
       'Cache-Control': 'no-cache',
       'Referer': 'https://www.google.cz/',
     },
-    // Načti také custom fields z RSS — včetně keywords
-    customFields: {
-      item: [
-        ['media:keywords', 'mediaKeywords'],
-        ['keywords', 'keywords'],
-        ['news:keywords', 'newsKeywords'],
-        ['category', 'categories', { keepArray: true }],
-      ],
-    },
   });
 }
 
@@ -69,33 +44,22 @@ function isBlockedUrl(url) {
   return BLOCKED_SECTIONS.some(s => u.includes('/' + s + '-') || u.includes('/' + s + '/'));
 }
 
-// Vrátí všechna prohledávatelná slova z článku
-function getSearchableText(item) {
-  const parts = [];
-
-  // Titulek
-  if (item.title) parts.push(item.title);
-
-  // RSS keywords pole (iSport je posílá)
-  if (item.keywords) parts.push(item.keywords);
-  if (item.mediaKeywords) parts.push(item.mediaKeywords);
-  if (item.newsKeywords) parts.push(item.newsKeywords);
-
-  // Categories / tags
-  if (Array.isArray(item.categories)) parts.push(...item.categories);
-
-  // Perex / snippet
-  if (item.contentSnippet) parts.push(item.contentSnippet);
-
-  // URL slug
-  if (item.link) parts.push(item.link);
-
-  return normalize(parts.join(' '));
+// Stripne HTML tagy z content pole
+function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
 function articleMatchesClub(item, club) {
-  const text = getSearchableText(item);
-  return club.keywords.some(kw => text.includes(normalize(kw)));
+  // Hledáme ve všech dostupných textových polích
+  const searchText = normalize([
+    item.title || '',
+    item.contentSnippet || '',
+    stripHtml(item._content || ''),
+    item.url || '',
+  ].join(' '));
+
+  return club.keywords.some(kw => searchText.includes(normalize(kw)));
 }
 
 function extractImage(html) {
@@ -111,15 +75,14 @@ async function fetchFeed(feed) {
     let items = result.items.map(item => ({
       id: item.guid || item.link || String(Math.random()),
       title: item.title || '',
-      perex: item.contentSnippet || item.summary || '',
+      perex: item.contentSnippet || stripHtml(item.content || '').slice(0, 300) || '',
       url: item.link || '',
       publishedAt: item.isoDate || item.pubDate || new Date().toISOString(),
       source: feed.name,
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
-      // Ulož keywords pro matchování
-      _keywords: item.keywords || item.mediaKeywords || '',
-      _categories: Array.isArray(item.categories) ? item.categories : [],
+      // Interní pole pro matching — neposílá se klientovi
+      _content: item.content || '',
     }));
 
     // Vyloučí nesportovní sekce
@@ -166,8 +129,11 @@ async function fetchArticlesForClub(clubSlug) {
   if (!club) throw new Error(`Klub "${clubSlug}" nenalezen`);
   const all = await fetchAllArticles();
   const filtered = all.filter(item => articleMatchesClub(item, club));
-  console.log(`⚽ ${club.name}: ${filtered.length} článků`);
-  return filtered;
+
+  // Odstraň interní pole před odesláním
+  const clean = filtered.map(({ _content, ...rest }) => rest);
+  console.log(`⚽ ${club.name}: ${clean.length} článků`);
+  return clean;
 }
 
 module.exports = { fetchAllArticles, fetchArticlesForClub, fetchFeedDirect };
