@@ -18,9 +18,10 @@ const RSS_FEEDS = [
 
 // Oficiální weby klubů — používají tolerantní XML parser
 const CLUB_FEEDS = [
-  { name: 'Slavia Praha',   url: 'https://www.slavia.cz/rss.asp',                color: '#CC0000', clubOnly: 'Slavia' },
+  // Slavia vrací HTML místo RSS — přeskočíme, zachytíme přes obecné feedy
+  // { name: 'Slavia Praha',   url: 'https://www.slavia.cz/rss.asp', color: '#CC0000', clubOnly: 'Slavia' },
   { name: 'Sparta Praha',   url: 'https://www.sparta.cz/cs/rss/',                color: '#AC1A2F', clubOnly: 'Sparta' },
-  { name: 'Baník Ostrava',  url: 'https://www.fcbanik.cz/rss/',                  color: '#005CA9', clubOnly: 'Baník' },
+  { name: 'Baník Ostrava',  url: 'https://www.fcb.cz/rss.asp',                   color: '#005CA9', clubOnly: 'Baník' },
   { name: 'Sigma Olomouc',  url: 'https://www.sigmafotbal.cz/rss/',              color: '#003366', clubOnly: 'Sigma' },
   { name: 'Bohemians 1905', url: 'https://www.bohemians.cz/rss/',                color: '#007A33', clubOnly: 'Bohemians' },
   { name: 'Slovan Liberec', url: 'https://www.fcslovanliberec.cz/rss/',          color: '#003DA5', clubOnly: 'Liberec' },

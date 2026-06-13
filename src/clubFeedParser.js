@@ -64,22 +64,30 @@ async function fetchClubFeed(feed) {
       trim: true,
     });
 
-    // Podpora RSS 2.0 i Atom
+    // Podpora RSS 2.0 i Atom + case-insensitive (xml2js strict:false vrací velká písmena)
     let items = [];
-    if (parsed.rss?.channel?.[0]?.item) {
-      items = parsed.rss.channel[0].item;
-    } else if (parsed.feed?.entry) {
-      items = parsed.feed.entry;
+    const rss = parsed.rss || parsed.RSS;
+    const feed2 = parsed.feed || parsed.FEED;
+    if (rss) {
+      const channel = rss.channel?.[0] || rss.CHANNEL?.[0];
+      items = channel?.item || channel?.ITEM || [];
+    } else if (feed2) {
+      items = feed2.entry || feed2.ENTRY || [];
     }
 
     const result = items.map(item => {
-      const content = getText(item['content:encoded']) || getText(item.description) || '';
+      // Podpora pro case-insensitive klíče (strict: false vrací velká písmena)
+      const get = (key) => getText(item[key]) || getText(item[key.toUpperCase()]) || getText(item[key.toLowerCase()]) || '';
+      const content = get('content:encoded') || get('CONTENT:ENCODED') || get('description') || '';
+      const link = get('link') || get('LINK') || '';
+      const title = stripHtml(get('title') || get('TITLE'));
+      const pubDate = get('pubDate') || get('PUBDATE') || get('published') || new Date().toISOString();
       return {
-        id: getText(item.guid) || getText(item.link) || String(Math.random()),
-        title: stripHtml(getText(item.title)) || '',
-        perex: stripHtml(getText(item.description) || content).slice(0, 300),
-        url: getText(item.link) || '',
-        publishedAt: getText(item.pubDate) || getText(item.published) || new Date().toISOString(),
+        id: get('guid') || get('GUID') || link || String(Math.random()),
+        title,
+        perex: stripHtml(get('description') || get('DESCRIPTION') || content).slice(0, 300),
+        url: link,
+        publishedAt: pubDate,
         source: feed.name,
         sourceColor: feed.color,
         image: extractImage(content) || null,
