@@ -1,6 +1,7 @@
 const clubs = [
   {
     slug: 'slavia-praha',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/8/82/SK_Slavia_Prague_logo.svg',
     name: 'SK Slavia Praha',
     city: 'Praha',
     abbr: 'SLA',
@@ -9,6 +10,7 @@ const clubs = [
   },
   {
     slug: 'sparta-praha',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/f/f5/AC_Sparta_Prague_logo.svg',
     name: 'AC Sparta Praha',
     city: 'Praha',
     abbr: 'SPA',
@@ -17,6 +19,7 @@ const clubs = [
   },
   {
     slug: 'viktoria-plzen',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/3/37/FC_Viktoria_Plze%C5%88_logo.svg',
     name: 'FC Viktoria Plzeň',
     city: 'Plzeň',
     abbr: 'PLZ',
@@ -25,6 +28,7 @@ const clubs = [
   },
   {
     slug: 'banik-ostrava',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/b/b5/FC_Banik_Ostrava_logo.svg',
     name: 'FC Baník Ostrava',
     city: 'Ostrava',
     abbr: 'BAO',
@@ -33,6 +37,7 @@ const clubs = [
   },
   {
     slug: 'sigma-olomouc',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/e/e4/SK_Sigma_Olomouc_logo.svg',
     name: 'SK Sigma Olomouc',
     city: 'Olomouc',
     abbr: 'OLO',
@@ -41,6 +46,7 @@ const clubs = [
   },
   {
     slug: 'bohemians-1905',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/d/db/Bohemians_1905_logo.svg',
     name: 'Bohemians Praha 1905',
     city: 'Praha',
     abbr: 'BOH',
@@ -49,6 +55,7 @@ const clubs = [
   },
   {
     slug: 'slovan-liberec',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/5/5d/FC_Slovan_Liberec_logo.svg',
     name: 'FC Slovan Liberec',
     city: 'Liberec',
     abbr: 'LIB',
@@ -57,6 +64,7 @@ const clubs = [
   },
   {
     slug: 'slovacko',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/c/c4/FC_Slova%CC%81cko_logo.svg',
     name: 'FC Slovácko',
     city: 'Uherské Hradiště',
     abbr: 'SLO',
@@ -65,6 +73,7 @@ const clubs = [
   },
   {
     slug: 'mlada-boleslav',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/7/7c/FK_Mlad%C3%A1_Boleslav_logo.svg',
     name: 'FK Mladá Boleslav',
     city: 'Mladá Boleslav',
     abbr: 'MLB',
@@ -73,6 +82,7 @@ const clubs = [
   },
   {
     slug: 'jablonec',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/1/16/FK_Jablonec_logo.svg',
     name: 'FK Jablonec',
     city: 'Jablonec n. N.',
     abbr: 'JAB',
@@ -81,6 +91,7 @@ const clubs = [
   },
   {
     slug: 'teplice',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/5/55/FK_Teplice_logo.svg',
     name: 'FK Teplice',
     city: 'Teplice',
     abbr: 'TEP',
@@ -89,6 +100,7 @@ const clubs = [
   },
   {
     slug: 'karvina',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/d/d6/MFK_Karvin%C3%A1_logo.svg',
     name: 'MFK Karviná',
     city: 'Karviná',
     abbr: 'KAR',
@@ -97,6 +109,7 @@ const clubs = [
   },
   {
     slug: 'hradec-kralove',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/8/83/FC_Hradec_Kr%C3%A1lov%C3%A9_logo.svg',
     name: 'FC Hradec Králové',
     city: 'Hradec Králové',
     abbr: 'HRA',
@@ -105,6 +118,7 @@ const clubs = [
   },
   {
     slug: 'ceske-budejovice',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/b/b7/SK_Dynamo_%C4%8C._Bud%C4%9Bjovice_logo.svg',
     name: 'SK Dynamo Č. Budějovice',
     city: 'České Budějovice',
     abbr: 'DYN',
@@ -113,6 +127,7 @@ const clubs = [
   },
   {
     slug: 'zbrojovka-brno',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/0/0e/FC_Zbrojovka_Brno_logo.svg',
     name: 'FC Zbrojovka Brno',
     city: 'Brno',
     abbr: 'ZBR',
@@ -137,6 +152,7 @@ const clubs = [
   },
   {
     slug: 'dukla-praha',
+    logo: 'https://upload.wikimedia.org/wikipedia/en/3/34/FK_Dukla_Praha_logo.svg',
     name: 'FK Dukla Praha',
     city: 'Praha',
     abbr: 'DUK',
