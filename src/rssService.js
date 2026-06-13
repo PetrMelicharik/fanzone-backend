@@ -2,10 +2,16 @@ const Parser = require('rss-parser');
 const clubs = require('./clubs');
 
 const RSS_FEEDS = [
+  // iSport — sekce přímo pro Chance ligu
   { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/', color: '#E30613' },
+  // iSport — obecný fotbal (přestupy, reprezentace s hráči klubů)
   { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal/', color: '#E30613' },
+  // Sport.cz — fotbal
   { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
+  // ČT Sport — vše (fotbal filtrujeme podle sekcí)
   { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
+  // iSport — domácí fotbal (druhá liga, pohár atd.)
+  { name: 'iSport.cz', url: 'https://isport.blesk.cz/rss/fotbal-domaci-souteze/', color: '#E30613' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
