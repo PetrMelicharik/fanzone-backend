@@ -1,5 +1,5 @@
 const clubs = [
-  { slug: 'slavia-praha',     name: 'SK Slavia Praha',          city: 'Praha',            abbr: 'SLA', color: '#CC0000', keywords: ['Slavia', 'slávisté', 'Eden', 'sešívaní'] },
+  { slug: 'slavia-praha',     name: 'SK Slavia Praha',          city: 'Praha',            abbr: 'SLA', color: '#CC0000', keywords: ['Slavia', 'slávisté', 'sešívaní', 'vršovický klub'] },
   { slug: 'sparta-praha',     name: 'AC Sparta Praha',          city: 'Praha',            abbr: 'SPA', color: '#AC1A2F', keywords: ['Sparta', 'sparťané', 'Letná', 'Letenští'] },
   { slug: 'viktoria-plzen',   name: 'FC Viktoria Plzeň',        city: 'Plzeň',            abbr: 'PLZ', color: '#003087', keywords: ['Plzeň', 'Viktorka', 'Viktoria Plzeň', 'plzeňští'] },
   { slug: 'banik-ostrava',    name: 'FC Baník Ostrava',         city: 'Ostrava',          abbr: 'BAO', color: '#005CA9', keywords: ['Baník', 'Baník Ostrava', 'ostravští', 'Baníkovci'] },

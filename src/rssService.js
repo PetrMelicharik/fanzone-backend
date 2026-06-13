@@ -6,28 +6,31 @@ const RSS_FEEDS = [
     name: 'iSport.cz',
     url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/',
     color: '#E30613',
+    filterByUrl: 'fotbal',  // jen články z fotbalové sekce
   },
   {
     name: 'iSport.cz',
     url: 'https://isport.blesk.cz/rss/fotbal/',
     color: '#E30613',
+    filterByUrl: 'fotbal',
   },
   {
     name: 'Sport.cz',
     url: 'https://www.sport.cz/rss/fotbal/',
     color: '#003DA5',
+    filterByUrl: 'fotbal',  // vyloučí ostatni-xxx URL
   },
   {
     name: 'ČT Sport',
     url: 'https://sport.ceskatelevize.cz/rss',
     color: '#004B87',
+    filterByUrl: null,
   },
 ];
 
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
-  'Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0',
 ];
 
 function randomUA() {
@@ -52,13 +55,23 @@ function normalize(text) {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-// Hledáme POUZE v titulku — RSS feedy neposílají plný obsah
+// Keywords které musí stát samostatně — nestačí být součástí jiného slova
+// Např. "Eden" v "za Eden" je jiný kontext než "Eden" jako stadion Slavie
+// Proto hledáme keyword jako celé slovo nebo jasný kontext
 function articleMatchesClub(item, club) {
-  const titleNorm = normalize(item.title || '');
-  // Také prohledej URL článku — ta často obsahuje název klubu
-  const urlNorm = normalize(item.url || '');
-  const searchText = titleNorm + ' ' + urlNorm;
-  return club.keywords.some(kw => searchText.includes(normalize(kw)));
+  const title = normalize(item.title || '');
+  const url = normalize(item.url || '');
+
+  return club.keywords.some(kw => {
+    const kwNorm = normalize(kw);
+
+    // Keyword musí být v titulku jako celé slovo (ohraničené ne-písmeny)
+    // nebo musí být přímo v URL článku
+    const titleMatch = new RegExp(`(^|[^a-záčďéěíňóřšťúůýž])${kwNorm}([^a-záčďéěíňóřšťúůýž]|$)`).test(title);
+    const urlMatch = url.includes(kwNorm.replace(/ /g, '-'));
+
+    return titleMatch || urlMatch;
+  });
 }
 
 function extractImage(html) {
@@ -71,7 +84,7 @@ async function fetchFeed(feed) {
   const parser = makeParser();
   try {
     const result = await parser.parseURL(feed.url);
-    const items = result.items.map(item => ({
+    let items = result.items.map(item => ({
       id: item.guid || item.link || String(Math.random()),
       title: item.title || '',
       perex: item.contentSnippet || item.summary || '',
@@ -81,6 +94,12 @@ async function fetchFeed(feed) {
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
     }));
+
+    // Filtruj podle URL sekce — vyloučí např. /ostatni-mma/, /tenis/ apod.
+    if (feed.filterByUrl) {
+      items = items.filter(item => item.url.includes(feed.filterByUrl));
+    }
+
     console.log(`✅ ${feed.name} (${feed.url.split('/').slice(-2).join('/')}): ${items.length} článků`);
     return { ok: true, name: feed.name, url: feed.url, count: items.length, items };
   } catch (err) {
