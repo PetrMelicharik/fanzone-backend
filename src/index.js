@@ -70,3 +70,38 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Server běží na portu ${PORT}`);
 });
+
+// GET /api/raw - ukáže první 3 články z Chance liga feedu se všemi poli
+app.get('/api/raw', async (req, res) => {
+  const Parser = require('rss-parser');
+  const parser = new Parser({
+    timeout: 20000,
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+    },
+    customFields: {
+      item: [
+        ['media:keywords', 'mediaKeywords'],
+        ['keywords', 'keywords'],
+        ['category', 'categories', { keepArray: true }],
+      ],
+    },
+  });
+  try {
+    const result = await parser.parseURL('https://isport.blesk.cz/rss/fotbal-chance-liga/');
+    const sample = result.items.slice(0, 3).map(item => ({
+      title: item.title,
+      link: item.link,
+      guid: item.guid,
+      categories: item.categories,
+      keywords: item.keywords,
+      mediaKeywords: item.mediaKeywords,
+      contentSnippet: item.contentSnippet,
+      allKeys: Object.keys(item),
+    }));
+    res.json(sample);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
