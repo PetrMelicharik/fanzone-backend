@@ -6,27 +6,27 @@ const RSS_FEEDS = [
     name: 'iSport.cz',
     url: 'https://isport.blesk.cz/rss/fotbal-chance-liga/',
     color: '#E30613',
-    filterByUrl: 'fotbal',  // jen články z fotbalové sekce
   },
   {
     name: 'iSport.cz',
     url: 'https://isport.blesk.cz/rss/fotbal/',
     color: '#E30613',
-    filterByUrl: 'fotbal',
   },
   {
     name: 'Sport.cz',
     url: 'https://www.sport.cz/rss/fotbal/',
     color: '#003DA5',
-    filterByUrl: 'fotbal',  // vyloučí ostatni-xxx URL
   },
   {
     name: 'ČT Sport',
     url: 'https://sport.ceskatelevize.cz/rss',
     color: '#004B87',
-    filterByUrl: null,
   },
 ];
+
+const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
+  'cyklistika', 'formule', 'volejbal', 'florbal', 'basketbal', 'golf',
+  'motorismus', 'rychlobrusleni', 'biatlon', 'lyzovani', 'box', 'ostatni'];
 
 const USER_AGENTS = [
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
@@ -47,6 +47,15 @@ function makeParser() {
       'Cache-Control': 'no-cache',
       'Referer': 'https://www.google.cz/',
     },
+    // Načti také custom fields z RSS — včetně keywords
+    customFields: {
+      item: [
+        ['media:keywords', 'mediaKeywords'],
+        ['keywords', 'keywords'],
+        ['news:keywords', 'newsKeywords'],
+        ['category', 'categories', { keepArray: true }],
+      ],
+    },
   });
 }
 
@@ -55,23 +64,38 @@ function normalize(text) {
   return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-// Keywords které musí stát samostatně — nestačí být součástí jiného slova
-// Např. "Eden" v "za Eden" je jiný kontext než "Eden" jako stadion Slavie
-// Proto hledáme keyword jako celé slovo nebo jasný kontext
+function isBlockedUrl(url) {
+  const u = normalize(url);
+  return BLOCKED_SECTIONS.some(s => u.includes('/' + s + '-') || u.includes('/' + s + '/'));
+}
+
+// Vrátí všechna prohledávatelná slova z článku
+function getSearchableText(item) {
+  const parts = [];
+
+  // Titulek
+  if (item.title) parts.push(item.title);
+
+  // RSS keywords pole (iSport je posílá)
+  if (item.keywords) parts.push(item.keywords);
+  if (item.mediaKeywords) parts.push(item.mediaKeywords);
+  if (item.newsKeywords) parts.push(item.newsKeywords);
+
+  // Categories / tags
+  if (Array.isArray(item.categories)) parts.push(...item.categories);
+
+  // Perex / snippet
+  if (item.contentSnippet) parts.push(item.contentSnippet);
+
+  // URL slug
+  if (item.link) parts.push(item.link);
+
+  return normalize(parts.join(' '));
+}
+
 function articleMatchesClub(item, club) {
-  const title = normalize(item.title || '');
-  const url = normalize(item.url || '');
-
-  return club.keywords.some(kw => {
-    const kwNorm = normalize(kw);
-
-    // Keyword musí být v titulku jako celé slovo (ohraničené ne-písmeny)
-    // nebo musí být přímo v URL článku
-    const titleMatch = new RegExp(`(^|[^a-záčďéěíňóřšťúůýž])${kwNorm}([^a-záčďéěíňóřšťúůýž]|$)`).test(title);
-    const urlMatch = url.includes(kwNorm.replace(/ /g, '-'));
-
-    return titleMatch || urlMatch;
-  });
+  const text = getSearchableText(item);
+  return club.keywords.some(kw => text.includes(normalize(kw)));
 }
 
 function extractImage(html) {
@@ -93,14 +117,15 @@ async function fetchFeed(feed) {
       source: feed.name,
       sourceColor: feed.color,
       image: item.enclosure?.url || extractImage(item.content) || null,
+      // Ulož keywords pro matchování
+      _keywords: item.keywords || item.mediaKeywords || '',
+      _categories: Array.isArray(item.categories) ? item.categories : [],
     }));
 
-    // Filtruj podle URL sekce — vyloučí např. /ostatni-mma/, /tenis/ apod.
-    if (feed.filterByUrl) {
-      items = items.filter(item => item.url.includes(feed.filterByUrl));
-    }
+    // Vyloučí nesportovní sekce
+    items = items.filter(item => !isBlockedUrl(item.url));
 
-    console.log(`✅ ${feed.name} (${feed.url.split('/').slice(-2).join('/')}): ${items.length} článků`);
+    console.log(`✅ ${feed.name}: ${items.length} článků`);
     return { ok: true, name: feed.name, url: feed.url, count: items.length, items };
   } catch (err) {
     console.warn(`❌ ${feed.name}: ${err.message}`);
@@ -132,7 +157,7 @@ async function fetchAllArticles() {
     }
   }
   all.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
-  console.log(`📰 Celkem unikátních článků: ${all.length}`);
+  console.log(`📰 Celkem: ${all.length} článků`);
   return all;
 }
 
