@@ -9,28 +9,9 @@ const RSS_FEEDS = [
   { name: 'Sport.cz',  url: 'https://www.sport.cz/rss/fotbal/', color: '#003DA5' },
   { name: 'ČT Sport',  url: 'https://sport.ceskatelevize.cz/rss', color: '#004B87' },
 
-  // Další zdroje
-  { name: 'EuroFotbal.cz',   url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
-  { name: 'ČeskéNoviny.cz',  url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
-  { name: 'aktualne.cz',     url: 'https://sport.aktualne.cz/fotbal/ceska-liga/rss.xml', color: '#E67E22' },
-
-  // inFotbal.cz — RSS pro každý klub zvlášť (WordPress /feed/)
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/slavia/feed/',    color: '#1A7F3C', clubOnly: 'Slavia Praha' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/sparta/feed/',    color: '#1A7F3C', clubOnly: 'Sparta Praha' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/plzen/feed/',     color: '#1A7F3C', clubOnly: 'Viktoria Plzeň' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/banik/feed/',     color: '#1A7F3C', clubOnly: 'Baník Ostrava' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/sigma/feed/',     color: '#1A7F3C', clubOnly: 'Sigma Olomouc' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/bohemians/feed/', color: '#1A7F3C', clubOnly: 'Bohemians 1905' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/liberec/feed/',   color: '#1A7F3C', clubOnly: 'Slovan Liberec' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/slovacko/feed/',  color: '#1A7F3C', clubOnly: 'FC Slovácko' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/boleslav/feed/',  color: '#1A7F3C', clubOnly: 'Mladá Boleslav' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/jablonec/feed/',  color: '#1A7F3C', clubOnly: 'FK Jablonec' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/teplice/feed/',   color: '#1A7F3C', clubOnly: 'FK Teplice' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/karvina/feed/',   color: '#1A7F3C', clubOnly: 'MFK Karviná' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/hradec/feed/',    color: '#1A7F3C', clubOnly: 'Hradec Králové' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/dynamocb/feed/',  color: '#1A7F3C', clubOnly: 'Dynamo Č.B.' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/zbrojovka/feed/', color: '#1A7F3C', clubOnly: 'Zbrojovka Brno' },
-  { name: 'inFotbal.cz', url: 'https://infotbal.cz/chance-liga/dukla/feed/',     color: '#1A7F3C', clubOnly: 'Dukla Praha' },
+  // Další funkční zdroje
+  { name: 'EuroFotbal.cz',  url: 'https://www.eurofotbal.cz/feed/rss/', color: '#8E44AD' },
+  { name: 'ČeskéNoviny.cz', url: 'https://www.ceskenoviny.cz/sluzby/rss/fotbal.php', color: '#C0392B' },
 ];
 
 const BLOCKED_SECTIONS = ['mma', 'tenis', 'hokej', 'nhl', 'nba', 'atletika',
